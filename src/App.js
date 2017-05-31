@@ -1,13 +1,14 @@
-import React from 'react';
-import ReactAudioPlayer from 'react-audio-player';
-import YouTube from './YouTube';
+import React, {Component} from 'react';
+import Video from './Video';
+import TimeDisplay from './TimeDisplay';
+import TimeControl from './TimeControl';
 
-class Clock extends React.Component {
+class App extends Component {
   constructor() {
     super();
     this.state = {
-    	min: 0,
-    	sec: 2,
+    	min: 25,
+    	sec: 0,
     	finished: false
     }
     this.startTime = this.startTime.bind(this);
@@ -68,45 +69,53 @@ class Clock extends React.Component {
   	this.startTime();
   }
   
+  renderFinishedState() {
+  	var {sec,min} = this.state;
 
-  render() {
-  	var sec = this.state.sec;
-  	var min = this.state.min;
-  	var displaySeconds = function(seconds) {
-	  	if(seconds < 10){
-	  		return "0"+seconds
-	  	} else {
-	  		return seconds;
-	  	}
-  	}
-  	if(this.state.finished){
   		return (
+
   		<div>
   			<h1>Pomodoro Clock</h1>
-  			<iframe width="560" height="315" src="https://www.youtube.com/embed/OpIQNxiKJoE?controls=0" frameborder="0"></iframe>
+  			<Video />
+  			<TimeDisplay min={min} sec={sec}/>
   			<h3>Restart the timer:</h3>
 			<audio id="alarm" hidden>
  				<source src="pager.mp3" type="audio/mpeg" />
  			</audio>
- 			
-        	<button onClick={this.restartTimeShort}>Restart 5</button>
-        	<button onClick={this.restartTimeLong}>Restart 25</button>
+ 			<TimeControl buttons={this.getButtons()}/>
         </div>
   		)
-  	} else {
-	    return (
-	      <div>
-	      
-	        <h1>Pomodoro Clock</h1>
-	        <iframe width="560" height="315" src="https://www.youtube.com/embed/OpIQNxiKJoE?controls=0" frameborder="0"></iframe>
-	        <h2>{min}:{displaySeconds(sec)}</h2>
-	        <button onClick={this.startTime}>Start</button>
-	        <button onClick={this.stopTime}>Pause</button>
+  }
 
-	      </div>
-	    );
-    }
+  getButtons() {
+  	return this.state.finished ?
+  		[{handler: this.restartTimeShort, text: "Start 5 min break"},
+  		{handler: this.restartTimeLong, text: "Start 25 min work session"}]:
+
+  		[{handler: this.startTime, text: "start"},
+  		{handler:this.stopTime, text: "pause"}]
+  }
+
+  renderStartState() {
+  	var {sec,min} = this.state;
+  	var props = {sec, min};
+  	return (
+  		<div>
+	      	<h1>Pomodoro Clock</h1>
+	        <Video />
+	        <TimeDisplay {...props}/>
+	        <TimeControl buttons={this.getButtons()}/>
+	    </div>
+  	)
+  }
+
+  render() {
+	  	return this.state.finished ? 
+		  	this.renderFinishedState() : 
+		  	this.renderStartState()	;
   }
 }
 
-export default Clock;
+
+
+export default App;

@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Clock from './Clock';
-import './index.css';
+import App from './App';
+import './styles/index.css';
 
 ReactDOM.render(
-  <Clock />,
+  <App />,
   document.getElementById('root')
 );
